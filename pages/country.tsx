@@ -20,7 +20,7 @@ const GET_COUNTRY = gql`
 export default function Country () {
     const { query } = useRouter();
     const data = useQGLQuery('country', GET_COUNTRY, {code:query.code});
-    if(data.isLoading) return 'loading countries...';
+    if(data.isLoading) return 'loading country details...';
     if(data.error) return 'something went wrong...';
 
     return (
@@ -31,8 +31,8 @@ export default function Country () {
         <div className={styles.container}>
             <h1>Country details</h1>
             <p>Country Name: {data.data.country.name}</p>
-            <p>Country Native: +{data.data.country.native}</p>
-            <p>Country Phone: {data.data.country.phone}</p>
+            <p>Country Native: {data.data.country.native}</p>
+            <p>Country Phone: +{data.data.country.phone}</p>
             <p>Country Capital: {data.data.country.capital}</p>
             <p>Country Currency: {data.data.country.currency}</p>
             <p>Country Emoji: {data.data.country.emoji}</p>
