@@ -5,6 +5,7 @@ import Link from 'next/link'
 import gql from 'graphql-tag'
 import useQGLQuery  from '../../utils/useGQLQuery';
 import { dehydrate, QueryClient, useQuery } from "react-query"
+import { useEffect } from "react"
 
 const GET_COUNTRY = gql`
   query($code:ID!) {
@@ -19,16 +20,23 @@ const GET_COUNTRY = gql`
   }
 `;
 
+export async function getStaticPaths() {
+    return {
+      paths: [],
+      fallback: true,
+    }
+}
 
-const fetchCountry = () => {
-    const query = useRouter().query;
-    const data =  useQGLQuery('country', GET_COUNTRY, {code:query.code})
+
+function fetchCountry(code: any) {
+    const data =  useQGLQuery('country', GET_COUNTRY, {code:code})
     return data.data;
 }
 
-export async function getStaticProps() {
+
+export async function getStaticProps(context: { params: { code: any } }) {
     const queryClient = new QueryClient();
-    await queryClient.prefetchQuery('country', fetchCountry);
+    await queryClient.prefetchQuery('country', fetchCountry(context.params.code));
     return {
         props: {
             dehydratedState:dehydrate(queryClient)
@@ -36,10 +44,10 @@ export async function getStaticProps() {
     }
 }
 
-
-
 export default function Country () {
-    const {data} = useQuery('country', fetchCountry);
+    const router = useRouter()
+    const { code } = router.query
+    const {data}:any = useQuery('country', fetchCountry(code));
     return (
         <>
         <Head>
