@@ -36,7 +36,7 @@ function fetchCountry(code: any) {
 
 export async function getStaticProps(context: { params: { code: any } }) {
     const queryClient = new QueryClient();
-    await queryClient.prefetchQuery('country', fetchCountry(context.params.code));
+    await queryClient?.prefetchQuery('country', fetchCountry(context?.params?.code));
     return {
         props: {
             dehydratedState:dehydrate(queryClient)
@@ -51,16 +51,16 @@ export default function Country () {
     return (
         <>
         <Head>
-            <title>{data.country.name}</title>
+            <title>{data?.country?.name}</title>
         </Head>
         <div className={styles.container}>
             <h1>Country details</h1>
-            <p>Country Name: {data.country.name}</p>
-            <p>Country Native: {data.country.native}</p>
-            <p>Country Phone: +{data.country.phone}</p>
-            <p>Country Capital: {data.country.capital}</p>
-            <p>Country Currency: {data.country.currency}</p>
-            <p>Country Emoji: {data.country.emoji}</p>
+            <p>Country Name: {data?.country?.name}</p>
+            <p>Country Native: {data?.country?.native}</p>
+            <p>Country Phone: +{data?.country?.phone}</p>
+            <p>Country Capital: {data?.country?.capital}</p>
+            <p>Country Currency: {data?.country?.currency}</p>
+            <p>Country Emoji: {data?.country?.emoji}</p>
             <Link href='/'>
                 <button>Go back</button>
             </Link>
