@@ -19,7 +19,6 @@ export default function Home() {
   const [value, setValue] = useState('AD');
   if(data.isLoading) return 'loading countries...';
   if(data.error) return 'something went wrong...';
-  console.log(data.data);
   return (
     <div>
       <Head>
@@ -34,7 +33,7 @@ export default function Home() {
             <option value={country.code} key={country.code}>{country.name}</option>
           ))}
         </select>
-        <Link as={`/country/${value}`} href={`/country?code=${value}`}>
+        <Link href={`/country/${value}`}>
           <button>Details</button>
         </Link>
       </div>
