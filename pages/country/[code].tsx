@@ -1,11 +1,10 @@
 import { useRouter } from "next/router"
 import styles from '../../styles/Home.module.css'
 import Head from 'next/head'
+import {request} from 'graphql-request'
 import Link from 'next/link'
 import gql from 'graphql-tag'
-import useQGLQuery  from '../../utils/useGQLQuery';
 import { dehydrate, QueryClient, useQuery } from "react-query"
-import { useEffect } from "react"
 
 const GET_COUNTRY = gql`
   query($code:ID!) {
@@ -20,6 +19,23 @@ const GET_COUNTRY = gql`
   }
 `;
 
+
+function fetchCountry(code:any) {
+    const endpoint = 'https://countries.trevorblades.com/';
+    const fetchData = async () => await request(endpoint, GET_COUNTRY, {code:code});
+    return fetchData;
+}
+
+export async function getStaticProps(context: { params: { code: any } }) {
+    const queryClient = new QueryClient();
+    await queryClient?.prefetchQuery('country', fetchCountry(context.params.code));
+    return {
+        props: {
+            dehydratedState:dehydrate(queryClient)
+        }
+    }
+}
+
 export async function getStaticPaths() {
     return {
       paths: [],
@@ -28,39 +44,23 @@ export async function getStaticPaths() {
 }
 
 
-function fetchCountry(code: any) {
-    const data =  useQGLQuery('country', GET_COUNTRY, {code:code})
-    return data.data;
-}
-
-
-export async function getStaticProps(context: { params: { code: any } }) {
-    const queryClient = new QueryClient();
-    await queryClient?.prefetchQuery('country', fetchCountry(context?.params?.code));
-    return {
-        props: {
-            dehydratedState:dehydrate(queryClient)
-        }
-    }
-}
-
 export default function Country () {
-    const router = useRouter()
-    const { code } = router.query
-    const {data}:any = useQuery('country', fetchCountry(code));
+    const route = useRouter();
+    const {code} = route.query;
+    const data = useQuery('country', fetchCountry(code))
     return (
         <>
         <Head>
-            <title>{data?.country?.name}</title>
+            <title>{data?.data?.country.name}</title>
         </Head>
         <div className={styles.container}>
             <h1>Country details</h1>
-            <p>Country Name: {data?.country?.name}</p>
-            <p>Country Native: {data?.country?.native}</p>
-            <p>Country Phone: +{data?.country?.phone}</p>
-            <p>Country Capital: {data?.country?.capital}</p>
-            <p>Country Currency: {data?.country?.currency}</p>
-            <p>Country Emoji: {data?.country?.emoji}</p>
+            <p>Country Name: {data?.data?.country.name}</p>
+            <p>Country Native: {data?.data?.country.native}</p>
+            <p>Country Phone: +{data?.data?.country.phone}</p>
+            <p>Country Capital: {data?.data?.country.capital}</p>
+            <p>Country Currency: {data?.data?.country.currency}</p>
+            <p>Country Emoji: {data?.data?.country.emoji}</p>
             <Link href='/'>
                 <button>Go back</button>
             </Link>
